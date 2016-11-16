@@ -15,7 +15,7 @@ class user_crud_test {
      * @see user/user::getRequestedUserData()
      */
     public function validation() {
-        
+
         test( $error = validate_id( 'abc' ), "validate_id('abc') failed: $error" );
         test( ! validate_id( '1234' ), "validate_id('1234') success" );
         test( $error = validate_email( 'abc@def' ), "validate_email('abc@def') failed: $error" );
@@ -69,7 +69,15 @@ class user_crud_test {
         $user_idx = user()->create( $user );
         test( is_numeric($user_idx), "register() success for login", "register() failed: $user_idx" );
 
-        user()->login( $user['id'], $user['password'] );
+        $re = user()->getLoginToken( $user['id'] . 'noexists' , $user['password'] );
+        test( is_array($re), "login failed: $re[code], $re[message]");
+
+        $re = user()->getLoginToken( $user['id'], $user['password'] . ' fail' );
+        test( is_array($re), "login failed: $re[code], $re[message]");
+
+        $re = user()->getLoginToken( $user['id'], $user['password'] );
+        test( is_string($re), "got login token: $re", "login failed");
+
 
     }
 }

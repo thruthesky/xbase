@@ -127,6 +127,8 @@ class User {
 
     /**
      *
+     * echo JSON data based on getLoginToken()
+     *
      * @param $id
      * @param $password
      */
