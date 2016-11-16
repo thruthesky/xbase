@@ -15,14 +15,13 @@ class user_crud_test {
      * @see user/user::getRequestedUserData()
      */
     public function validation() {
+        
         test( $error = validate_id( 'abc' ), "validate_id('abc') failed: $error" );
+        test( ! validate_id( '1234' ), "validate_id('1234') success" );
         test( $error = validate_email( 'abc@def' ), "validate_email('abc@def') failed: $error" );
         test( ! validate_email( 'abc@def.com' ), "validate_email('abc@def.com') success" );
         test( $error = validate_password( '1234' ), "validate_password('1234') failed: $error" );
         test( ! validate_password( '12345' ), "validate_password('12345') $error" );
-
-
-
 
     }
 
