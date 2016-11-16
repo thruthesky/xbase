@@ -6,5 +6,8 @@ include_once "functions.php";
 include_once "model/app/app.php";
 include_once "model/index/index.php";
 include_once "model/user/user.php";
+include_once "model/post/post_config.php";
+include_once "model/post/post.php";
+include_once "model/post/comment.php";
 include_once "model/test/test.php";
 
