@@ -23,7 +23,7 @@ function isWeb() {
  *      echo in('id');
  * @endcode
  */
-function in( $name=null, $default = '' ) {
+function in( $name=null, $default = null ) {
     if ( isCLI() ) {
         $q = $GLOBALS['argv'][1];
         parse_str( $q, $_REQUEST );
@@ -87,7 +87,7 @@ function rglob($pattern, $flags = 0) {
  * @param $data - string or hash array of request variables
  * @return string - response body without headers
  */
-function http_post ($url, $data)
+function http_post ($url, $data, $json_decode = false, $debug = false)
 {
     if ( ! is_array( $data ) ) $data_url = $data;
     else $data_url = http_build_query ($data);
@@ -102,9 +102,36 @@ function http_post ($url, $data)
             )
         )
     );
-
+    if ($debug) {
+        echo "request url: " . SERVER_URL . "?$data_url\n";
+    }
     $content = file_get_contents ( $url, false, $context );
-    return $content;
+    if ( $json_decode ) {
+        $re = @json_decode( $content, true );
+        if ( $error = json_decode_error() ) {
+            return ['code' => -11, 'message' => " >> Failed on decode JSON data from server $error - It may be server error. Data from server: $content"];
+        }
+        else return $re;
+    }
+    else return $content;
+}
+
+function json_decode_error() {
+    $error = json_last_error();
+    if ( $error ) {
+
+        switch ( $error ) {
+            case JSON_ERROR_NONE: return ' - No errors';
+            case JSON_ERROR_DEPTH: return' - Maximum stack depth exceeded';
+            case JSON_ERROR_STATE_MISMATCH: return ' - Underflow or the modes mismatch';
+            case JSON_ERROR_CTRL_CHAR: return ' - Unexpected control character found';
+            case JSON_ERROR_SYNTAX: return ' - Syntax error, malformed JSON';
+            case JSON_ERROR_UTF8: return ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+            default: return ' - Unknown error';
+        }
+
+    }
+    else return false;
 }
 
 /**
@@ -240,7 +267,75 @@ function error( $code, $message ) {
     return ['code'=>$code, 'message'=>$message];
 }
 
-function get_token_id( $user ) {
-    $md5 = md5("$user[idx]-$user[id]-$user[email]-$user[password]");
+/**
+ *
+ * @note
+ *      - Token is a secret key that tells the user login is valid.
+ *      - SessionID is user.idx and Token.
+ *
+ * @Warning Avoid to use this method directly. use it through User::getSessioinId()
+ * @note every time, user updates his record, new token_id will be generated based on 'updated' field.
+ * @param $idx_user - user.idx
+ * @return string
+ */
+function get_session_id( $idx_user ) {
+    if ( empty($idx_user) ) return null;
+    $user = user()->get( $idx_user );
+    $md5 = md5("$user[idx]-$user[id]-$user[email]-$user[password]-$user[updated]");
     return "{$user['idx']}-$md5";
+}
+
+
+/**
+ * @deprecated Do not use this.
+ * @Warning use this only when you know what you are doing......
+ * @Warning this is un-tested.
+ * @Warning this will not work if you provide '$user' with old 'updated' field.
+ * @param $user
+ * @return string
+ */
+function get_session_id_of( $user ) {
+    $md5 = md5("$user[idx]-$user[id]-$user[email]-$user[password]-$user[updated]");
+    return "{$user['idx']}-$md5";
+}
+
+function login() {
+    return my('idx');
+}
+
+/**
+ * @param null $field
+ * @return array|bool|null
+ *      - if the user has not logged in, it returns false.
+ *      - if there is no such field, it returns false.
+ */
+function my( $field = null ) {
+    global $_current_user;
+    if ( empty($_current_user) ) return false;
+
+    if ( $field ) {
+        if ( isset($_current_user[ $field ]) ) return $_current_user[ $field ];
+        else return false;
+    }
+    else return $_current_user;
+}
+
+
+
+function dog( $message ) {
+    static $count_dog = 0;
+    $count_dog ++;
+
+    if( is_array( $message ) || is_object( $message ) ){
+        $message = print_r( $message, true );
+    }
+    else {
+
+    }
+
+    $message = "[$count_dog] $message\n";
+
+    $fp = fopen( './var/log/debug.log', 'a');
+    fwrite( $fp, $message);
+    fclose( $fp );
 }

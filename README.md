@@ -30,6 +30,7 @@ ex)
     {"code":-1120,"message":"no such table: use2r - SELECT * FROM use2r"}
 
 
+
 # TEST
 
     * All test file must be end with '_test.php'
@@ -39,9 +40,14 @@ ex)
     * A test method can be invoked indivisually like below
      
         * \app\php\php index.php "mc=test.method&method=user.user_crud_test.register&id=myid2&password=12345&email=abc@def.co"
+        * \app\php\php index.php "mc=test.method&method=user.user_crud_test.update"
     
     * Or all test can be called like below.
     
         * \app\php\php index.php "mc=test.all"
-        
-        
+
+
+# EXAMPLE CODES
+
+    * see test files.
+    

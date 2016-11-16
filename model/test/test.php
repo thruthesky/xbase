@@ -18,7 +18,12 @@ class Test {
         include_once "model/$model/$class.php";
         $class_name = ucfirst($class);
         $obj = new $class_name;
-        $obj->$method();
+        if ( method_exists( $obj, $method ) ) {
+            $obj->$method();
+        }
+        else {
+            json_error(-1021, "$model/$class::$method does not exists");
+        }
         exit;
     }
 }
