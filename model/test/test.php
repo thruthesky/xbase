@@ -1,7 +1,9 @@
 <?php
-define( 'SERVER_URL', 'http://work.org/xbase/index.php');
+define( 'SERVER_URL', 'http://127.0.0.1/xbase/index.php');
 class Test {
     public function all () {
+
+        $this->display_header();
         $files = rglob( '*_test.php' );
         // print_r($files);
         foreach( $files as $file ) {
@@ -14,6 +16,7 @@ class Test {
     }
 
     public function method() {
+        $this->display_header();
         list ( $model, $class, $method ) = explode( '.', in('method') );
         include_once "model/$model/$class.php";
         $class_name = ucfirst($class);
@@ -25,5 +28,14 @@ class Test {
             json_error(-1021, "$model/$class::$method does not exists");
         }
         exit;
+    }
+
+    private function display_header()
+    {
+
+        echo colorize("\n\nxBase Unit Test Begins ...\n\n\n", "SUCCESS");
+        if ( isWeb() ) echo '<br>';
+
+
     }
 }

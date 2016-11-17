@@ -1,8 +1,12 @@
 <?php
-class post_config {
+class comment {
 
+    public function create()
+    {
+
+    }
 }
 
-function post_config() {
-    return new post_config();
+function comment() {
+    return new comment();
 }

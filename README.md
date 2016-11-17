@@ -8,6 +8,8 @@ Center X Base Framework
     USER CRUD with PHOTO
     POST CRUD with PHOTO
     
+    TEST on PERMISSION.
+    
 
 # MC pattern
 
@@ -41,6 +43,10 @@ ex)
      
         * \app\php\php index.php "mc=test.method&method=user.user_crud_test.register&id=myid2&password=12345&email=abc@def.co"
         * \app\php\php index.php "mc=test.method&method=user.user_crud_test.update"
+        
+    * Or you can invoke a test script
+    
+        * C:\app\php\php.exe .\index.php "mc=test.method&method=post.post_test.run
     
     * Or all test can be called like below.
     
@@ -50,4 +56,16 @@ ex)
 # EXAMPLE CODES
 
     * see test files.
-    
+
+
+
+# Documentation
+
+## User
+
+all user are signed in.
+
+even anonymous is singed in automatically.
+
+anonyous user who did not signed in will use 'anonymous' account.
+

@@ -1,6 +1,13 @@
 <?php
 
-class User {
+class User extends Entity {
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->setTable( 'user' );
+        $this->setSearchableFields('idx,id,name,nickname');
+    }
     /**
      *
      * @code
@@ -176,6 +183,8 @@ class User {
      *      - string of error message on failure
      *      - false on success
      *
+     * @Attention it only updates login users info.
+     *
      */
     public function update( $user ) {
         if ( $error = $this->validate_user_data($user, true) ) return $error;
@@ -192,6 +201,7 @@ class User {
      * @param $idx - user.idx or user.id
      * @return array|null
      */
+    /*
     public function get( $idx ) {
         if ( is_numeric( $idx ) ) return db()->get_row( "SELECT * FROM user WHERE idx=$idx", ARRAY_A);
         else {
@@ -199,6 +209,7 @@ class User {
             return db()->get_row( "SELECT * FROM user WHERE id='$id'", ARRAY_A);
         }
     }
+    */
 
     public function getByEmail ( $email ) {
         $email = db()->escape( $email );
@@ -260,6 +271,10 @@ class User {
         json_success( my($field) );
     }
 
+    /**
+     *
+     * @ATTENTION use parent's method.
+     *
     public function delete($idx)
     {
         if ( is_numeric( $idx ) ) db()->query("DELETE FROM user WHERE idx='$idx'");
@@ -267,6 +282,24 @@ class User {
             $id = db()->escape( $idx );
             db()->get_row( "DELETE FROM user WHERE id='$id'", ARRAY_A);
         }
+    }
+     */
+
+
+    /**
+     * @Attention For security reason, "user.get" restful request always have fixed set of fields.
+     *
+     * @param null $idx
+     * @param string $fields
+     * @return array|null|void
+     *
+     */
+    public function get( $idx = null, $fields = '*' ) {
+        if ( $idx === null ) {
+            $_REQUEST['fields'] = "idx, id, email, created, name, nickname, country, province, city";
+            parent::get();
+        }
+        return parent::get( $idx, $fields );
     }
 
 }

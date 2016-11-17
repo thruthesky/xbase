@@ -25,8 +25,12 @@ function isWeb() {
  */
 function in( $name=null, $default = null ) {
     if ( isCLI() ) {
-        $q = $GLOBALS['argv'][1];
-        parse_str( $q, $_REQUEST );
+        global $argv;
+        if ( isset( $argv[1] ) ) {
+            $q = $argv[1];
+            parse_str( $q, $_parsed );
+            $_REQUEST = array_merge( $_REQUEST, $_parsed );
+        }
     }
     if ( $name === null ) return $_REQUEST;
     else if ( isset( $_REQUEST[$name]) && $_REQUEST[$name] ) return $_REQUEST[$name];
@@ -49,9 +53,16 @@ function getController() {
     if ( isset( $arr[1] ) ) return $arr[1];
     else return 'index';
 }
-function json_success( $data = '' ) {
+function json( $data = [] ) {
+    if ( $data ) {
+        if ( isset( $data['code'] ) && $data['code'] ) json_error( $data );
+        else json_success( $data );
+    }
+    else json_success();
+}
+function json_success( $data = null ) {
     $res = [ 'code' => 0 ];
-    if ( $data ) $res['data'] = $data;
+    if ( $data !== null ) $res['data'] = $data;
     echo json_encode($res);
     exit;
 }
@@ -60,6 +71,13 @@ function json_error( $code, $message=null ) {
     else $res = [ 'code' => $code, 'message' => $message ];
     echo json_encode( $res );
     exit;
+}
+function is_error( $re ) {
+    if ( $re['code'] ) return true;
+    else return false;
+}
+function is_success( $re ) {
+    return ! is_error( $re );
 }
 
 /**
@@ -96,9 +114,10 @@ function http_post ($url, $data, $json_decode = false, $debug = false)
         array (
             'http'=> array (
                 'method'    => 'POST',
+                'protocol_version' => 1.1,
                 'header'    =>"Content-Type: application/x-www-form-urlencoded\r\nConnection: close\r\nContent-Length: $data_len\r\n",
                 'content'   => $data_url,
-                'timeout'   => 10
+                'timeout'   => 4
             )
         )
     );
@@ -114,6 +133,18 @@ function http_post ($url, $data, $json_decode = false, $debug = false)
         else return $re;
     }
     else return $content;
+}
+
+function http_test( $data, $debug = false ) {
+    if ( !isset($data['mc']) ) {
+        echo colorize( "There is no 'mc' query variabsle. Input mc\n\n", 'FAILURE');
+        exit;
+    }
+    if ( preg_match("/^test\./", $data['mc'] ) ) {
+        echo colorize( "You are calling Recursive Test: _REQUEST[mc] must have proper call: ' $data[mc] ' is wrong\n\n", 'FAILURE');
+        exit;
+    }
+    return http_post( SERVER_URL, $data, true, $debug);
 }
 
 function json_decode_error() {
@@ -242,13 +273,27 @@ function colorize($text, $status) {
 
 
 
-
-function test( $exp, $success, $failure = null ) {
-    static $_test_count = 0;
-    if ( $_test_count == 0 ) {
-        echo colorize("\nxBase Unit Test Begins ...\n\n", "SUCCESS");
-        if ( isWeb() ) echo '<br>';
+$_test_count = 0;
+function test_pass( $msg ) {
+    global $_test_count;
+    $_test_count ++;
+    echo "[$_test_count] ";
+    echo "PASS: $msg\n";
+    if ( isWeb() ) {
+        echo "<br />";
     }
+}
+function test_fail( $msg ) {
+    global $_test_count;
+    $_test_count ++;
+    echo "[$_test_count] ";
+    echo colorize("FAIL: $msg\n", 'FAILURE');
+    if ( isWeb() ) {
+        echo "<br />";
+    }
+}
+function test( $exp, $success, $failure = null ) {
+    global $_test_count;
     $_test_count ++;
     echo "[$_test_count] ";
     if ( $exp ) echo "PASS: $success";
@@ -258,6 +303,7 @@ function test( $exp, $success, $failure = null ) {
         echo "<br />";
     }
 }
+
 
 function encrypt_password( $password ) {
     return md5( $password );
@@ -338,4 +384,16 @@ function dog( $message ) {
     $fp = fopen( './var/log/debug.log', 'a');
     fwrite( $fp, $message);
     fclose( $fp );
+}
+
+function get_page_no( $no ) {
+    if ( is_numeric($no) ) {
+        if ( $no < 1 ) return 1;
+        else return $no;
+    }
+    else return 1;
+}
+function get_page_from( $page_no, $rows_no ) {
+    $page_no --;
+    return $page_no * $rows_no;
 }

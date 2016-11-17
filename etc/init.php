@@ -34,3 +34,10 @@ if ( in('session_id') ) {
         json_error(-40097, "wrong-session-id");
     }
 }
+/**
+ * When user is not logged in ( or has no session_id ), the user is using 'anonymous' account.
+ */
+else {
+    $_current_user = user()->get( 'anonymous' );
+    if ( empty($_current_user) ) json_error( -40080, "anonymous-does-not-exist");
+}

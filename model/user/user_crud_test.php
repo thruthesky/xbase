@@ -60,8 +60,9 @@ class user_crud_test {
 
 
         $data = array_merge( $user, ['mc'=>'user.register'] );
-        $res = http_post( SERVER_URL, $data, true);
-        test( $res['code'], "register through HTTP failed: $res[message]", "restration on HTTP usccess? why?");
+        $res = http_test( $data );
+        if ( is_error( $res ) ) test_pass("register through HTTP failed: $res[message]");
+        else test_fail("restration on HTTP usccess? why?");
 
 
 
@@ -77,7 +78,7 @@ class user_crud_test {
     public function update() {
 
 
-        $id = "id-update-test";
+        $id = "id-update-test-2";
         $password = '12345a';
         $email = "$id@gmail.com";
 
@@ -101,7 +102,8 @@ class user_crud_test {
         unset( $user['password'] );
         $user['email'] = "$id@naver.com";
         $data = array_merge( $user, ['mc'=>'user.edit', 'session_id'=>$session_id] );
-        $res = http_post( SERVER_URL, $data, true);
+        $res = http_test( $data );
+
         $m = $res['code'] ? $res['message'] : $res['data'];
         test( $res['code'] == 0 , "edit for update ok: new session_id: $m", "user.edit failed: ($res[code]) $m");
         $new_session_id = $m;
