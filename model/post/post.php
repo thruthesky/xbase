@@ -107,6 +107,13 @@ class post extends Entity {
             'address', 'mobile', 'landline'
         ];
 
+
+        for( $i = 1; $i <= 10; $i++ ) {
+            $v = "category_$i";
+            if ( in( $v ) ) $data[ $v ] = in( $v );
+        }
+
+
         for( $i = 1; $i <= 10; $i++ ) {
             $v = "extra_$i";
             if ( in( $v ) ) $data[ $v ] = in( $v );
