@@ -8,7 +8,17 @@ Center X Base Framework
     USER CRUD with PHOTO
     POST CRUD with PHOTO
     
-    TEST on PERMISSION.
+    TEST on PERMISSION for security.
+    
+        - users can crud only on their post, profile.
+            if it's not user's data, block it.
+            like
+            -- post_config crud
+            -- 
+        - admin can do what ever.
+    
+    @note FORUM cannot be deleted - if you do, there are many works.
+    
     
 
 # MC pattern
@@ -69,3 +79,23 @@ even anonymous is singed in automatically.
 
 anonyous user who did not signed in will use 'anonymous' account.
 
+
+
+
+
+
+# TABLES
+
+## user table
+
+
+* user.primary_photo
+    holds user's primary photo information.
+    it is up to developer's choice how it would be.
+    It can be firebase storage url
+    or It can be a photo number
+    or it can be relative file path.
+    
+    You can even save JSON string in it so that you can have many info.
+    
+    

@@ -34,14 +34,16 @@ class Entity {
      * @param $idx
      *      - table's idx or id field
      *      - it can be set through RESTFUL QUERY
-     * @Attention
-     *      - when invoked by RESTFUL QUERY, in('id') can be used.
-     * @param $fields
+     * @param string $fields
      *      - 'fields' to select which fields.
      *      - if invoked by RESTFUL QUERY, then in('fields') will be used.
      *
+     * @param null $field
+     *      - you can get any field using this.
+     *      - $field cannot be used with Restful Query for security reason.
      * @return array|null|void
-     *
+     * @Attention
+     *      - when invoked by RESTFUL QUERY, in('id') can be used.
      * @note @importance @usage
      *
      *      - if you need to search, then use entity::search()
@@ -53,11 +55,10 @@ class Entity {
      *
      * @see user_entity_test::run()
      * @see user::get() for security.
-     *
      */
-    public function get( $idx = null, $fields = '*' ) {
+    public function get( $idx = null, $fields = '*', $field = null ) {
         $restful = false;
-        if ( empty($idx) ) {
+        if ( $idx === null ) { /// @attention if $idx is null, then it is Restful Query
             $idx = in('idx') ? in('idx') : in('id');
             if ( $idx ) {
                 $restful = true;
@@ -68,7 +69,11 @@ class Entity {
                 json_error(-40430, 'input-id-or-idx');
             }
         }
-        if ( is_numeric( $idx ) ) $row = db()->get_row( "SELECT $fields FROM {$this->table} WHERE idx=$idx", ARRAY_A);
+        if ( $field !== null ) {            /// @ATTENTION $field can be set only programmatically
+            $id = db()->escape( $idx );
+            $row = db()->get_row( "SELECT $fields FROM {$this->table} WHERE $field='$id'", ARRAY_A);
+        }
+        else if ( is_numeric( $idx ) ) $row = db()->get_row( "SELECT $fields FROM {$this->table} WHERE idx=$idx", ARRAY_A);
         else {
             $id = db()->escape( $idx );
             $row = db()->get_row( "SELECT $fields FROM {$this->table} WHERE id='$id'", ARRAY_A);

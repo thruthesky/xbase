@@ -1,4 +1,14 @@
 <?php
+/**
+ * Class post_config
+ *
+ * @see @example How to get post_config through REST API
+ *
+ *      post/post_test.php::get_post_config();
+ *
+ *
+ *
+ */
 class post_config extends Entity {
 
     public function __construct()
@@ -7,6 +17,11 @@ class post_config extends Entity {
         $this->setTable( 'post_config' );
     }
 
+    /**
+     *
+     * @see @example post/post_test.php::create_post_config();
+     *
+     */
     public function create() {
         $data = $this->getRequestPostConfigData();
         if ( $error = $this->validate_post_config_data( $data ) ) json( $error );
@@ -30,6 +45,8 @@ class post_config extends Entity {
     }
 
     /**
+     *
+     * @Warning @todo security.
      * @param null $idx
      * @return bool|string
      */

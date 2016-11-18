@@ -11,21 +11,78 @@ class post_test {
     }
 
 
-    //
-
+    /**
+     * @param $idx
+     * @return string
+     */
     private function get($idx) {
-        // get edited post
-        $data = [
+        $rest = [
             'mc'=>'post.get',
             'idx' => $idx,
             'fields'=>'*'
         ];
-        return http_test( $data );
+        return http_test( $rest );
     }
 
 
+    /**
+     * @param $id
+     * @return bool|array
+     *      - false on failure. It returns false if the post_config does not exist.
+     *      - hash array on success.
+     */
+    private function get_post_config($id) {
 
-    private function create()
+        $req = [
+            'mc' => 'post_config.get',
+            'id' => $id
+        ];
+        $re = http_test( $req );
+        if ( $re['code'] ) return false;
+        else return $re['data'];
+
+    }
+
+
+    /**
+     *
+     * Creates a post_config with the 'id' if it does not exists.
+     *
+     * @param $id
+     * @return string|number
+     *
+     *      - string on failure. If it returns a string, then really it has an error.
+     *      - post_config.idx as number on success.
+     *
+     * @code
+     *
+     *
+    $re = $this->get_post_config('test');
+    print_r($re);
+
+    if ( empty($re) ) $this->create_post_config('test');
+
+    $re = $this->get_post_config('test');
+    print_r($re);
+
+     * @endcode
+     */
+    private function create_post_config( $id ) {
+        $re = $this->get_post_config( $id );
+        if ( $re ) return $re;
+
+        $rest = [
+            'mc' => 'post_config.create',
+            'id' => $id,
+            'name' => "Name of $id"
+        ];
+        $re = http_test( $rest );
+        if ( is_success( $re ) ) return $re['data'];
+        else return $re['message'];
+    }
+
+
+    public function create()
     {
         // error test without title.
         $re = post()->create();
@@ -40,11 +97,24 @@ class post_test {
         else test_fail("success: idx: $re");
 
 
-        // create test with title and post id.
-        $_REQUEST['post_id'] = 'helper';
+        // error test with wrong post id.
+        $_REQUEST['post_id'] = 'wrong-post-config-id';
+        $re = post()->create();
+        if ( is_error( $re ) ) test_pass("post()->create() failed : $re[message]");
+        else test_fail("create should failed with wrong post config id");
+
+
+        // success
+        $e = $this->create_post_config('post-test');
+        if ( is_string($e) ) test_fail("post_config failed with test: $e");
+        $_REQUEST = [
+            'post_id' => 'test',
+            'title' => 'This is post test'
+        ];
         $re = post()->create();
         if ( is_error( $re ) ) test_fail("post()->create() failed : $re[message]");
         else test_pass("create success: idx: $re");
+
 
 
     }
@@ -171,6 +241,7 @@ class post_test {
                     test_pass ("post_test::search() >> post write failed: $re[message]");
                 }
             }
+            echo "\n";
         }
 
         // search users. total count 100. count 100.

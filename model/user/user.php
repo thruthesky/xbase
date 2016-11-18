@@ -294,7 +294,7 @@ class User extends Entity {
      * @return array|null|void
      *
      */
-    public function get( $idx = null, $fields = '*' ) {
+    public function get( $idx = null, $fields = '*', $field = null ) {
         if ( $idx === null ) {
             $_REQUEST['fields'] = "idx, id, email, created, name, nickname, country, province, city";
             parent::get();

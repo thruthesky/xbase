@@ -31,17 +31,22 @@ class post extends Entity {
      *      - error data on failure.
      *
      * @Attention NOT Restful interface. @use post::write() for restful interface.
+     *
+     * @condition
+     *      - on create(), it checks if 'post_id' exists.
      */
     public function create() {
         $data = $this->getRequestPostData();
         if ( $error = $this->validate_post_data( $data ) ) return $error;
+        $config = post_config()->get( $data['post_id'] );
+        if ( empty($config) ) return error(-40104, 'post-config-does-not-exist');
         $data['user_id'] = my('id');
         $data['created'] = time();
         $data['updated'] = time();
         $idx = db()->insert('post_data', $data);
 
         if ( $idx ) return $idx;
-        else return error(-40100, 'failed to create post reord.');
+        else return error(-40100, 'failed-to-post-create');
     }
 
     /**
@@ -85,8 +90,31 @@ class post extends Entity {
 
         if ( in('idx') ) $data['idx'] = in('idx');
         if ( in('post_id') ) $data['post_id'] = in('post_id');
+        if ( in('password') ) $data['post_id'] = in('password');
         if ( in('title') ) $data['title'] = in('title');
         if ( in('content') ) $data['content'] = in('content');
+
+        if ( in('email') ) $data['email'] = in('email');
+        if ( in('first_name') ) $data['email'] = in('email');
+        if ( in('middle_name') ) $data['email'] = in('email');
+        if ( in('last_name') ) $data['email'] = in('email');
+        if ( in('gender') ) $data['email'] = in('email');
+        if ( in('birth_year') ) $data['email'] = in('email');
+
+        $names = [ 'idx', 'post_id', 'password', 'title', 'content',
+            'email', 'first_name', 'middle_name', 'last_name', 'gender',
+            'birth_year', 'birth_month', 'birth_day', 'country', 'province', 'city',
+            'address', 'mobile', 'landline'
+        ];
+
+        for( $i = 1; $i <= 10; $i++ ) {
+            $v = "extra_$i";
+            if ( in( $v ) ) $data[ $v ] = in( $v );
+        }
+        for( $i = 1; $i <= 5; $i++ ) {
+            $v = "attachment_$i";
+            if ( in( $v ) ) $data[ $v ] = in( $v );
+        }
 
         return $data;
     }
