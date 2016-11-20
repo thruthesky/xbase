@@ -1,5 +1,4 @@
 <?php
-define( 'SERVER_URL', 'http://127.0.0.1/xbase/index.php');
 class Test {
     public function all () {
 

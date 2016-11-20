@@ -370,6 +370,8 @@ function my( $field = null ) {
 
 function dog( $message ) {
     static $count_dog = 0;
+
+	if ( ! DEVELOPMENT ) return;
     $count_dog ++;
 
     if( is_array( $message ) || is_object( $message ) ){
