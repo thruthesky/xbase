@@ -10,7 +10,7 @@ dog("new access : " . date('r'));
 /**
  * --------------------- Database Connection -----------------------------
  */
-$_sqlite_db = new Database('./var/db/','database.php');
+$_sqlite_db = new Database('./var/db/','.database.php');
 $_sqlite_db->hide_errors();
 function db() {
     global $_sqlite_db;

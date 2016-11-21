@@ -33,7 +33,10 @@ class post_config_test {
         $_REQUEST['name'] = $id . '-name';
         $re = http_test( $_REQUEST );
         if ( is_success( $re ) ) test_pass("post_config()->create() success: idx: $re[data]");
-        else test_fail("post_config()->create() failed: $re[message]");
+        else {
+		print_r($re);
+		test_fail("post_config()->create() failed: $re[message]");
+	}
 
     }
 
