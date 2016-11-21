@@ -42,7 +42,10 @@ index.php?mc=user.register
 
 * var/db/xbase.db is the template database. Do not overrwite this file.
     This file is added into git.
-    Copy this file and use the copied file as database.
+    Copy this file into something like "database.php" and use the copied file as database.
+
+    * @Attention file extension is '.php' for security reason.
+    
 
 When there is error, SQL error message will be return in JSON
 
