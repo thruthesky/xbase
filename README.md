@@ -19,6 +19,11 @@ Center X Base Framework
     
     @note FORUM cannot be deleted - if you do, there are many works.
     
+# Installation
+
+    copy var/db/xbase.db to var/db/database.db
+    give permission on var/db
+    give permission on va/db/database.db
     
 
 # MC pattern
@@ -34,6 +39,10 @@ index.php?mc=user.register
 
 
 # Database
+
+* var/db/xbase.db is the template database. Do not overrwite this file.
+    This file is added into git.
+    Copy this file and use the copied file as database.
 
 When there is error, SQL error message will be return in JSON
 
