@@ -88,24 +88,30 @@ class post extends Entity {
     {
         $data = [];
 
+        /*
         if ( in('idx') ) $data['idx'] = in('idx');
         if ( in('post_id') ) $data['post_id'] = in('post_id');
-        if ( in('password') ) $data['post_id'] = in('password');
+        if ( in('password') ) $data['password'] = in('password');
         if ( in('title') ) $data['title'] = in('title');
         if ( in('content') ) $data['content'] = in('content');
 
         if ( in('email') ) $data['email'] = in('email');
-        if ( in('first_name') ) $data['email'] = in('email');
-        if ( in('middle_name') ) $data['email'] = in('email');
-        if ( in('last_name') ) $data['email'] = in('email');
-        if ( in('gender') ) $data['email'] = in('email');
-        if ( in('birth_year') ) $data['email'] = in('email');
+        if ( in('first_name') ) $data['first_name'] = in('first_name');
+        if ( in('middle_name') ) $data['middle_name'] = in('middle_name');
+        if ( in('last_name') ) $data['last_name'] = in('last_name');
+        if ( in('gender') ) $data['gender'] = in('gender');
+        if ( in('birth_year') ) $data['birth_year'] = in('birth_year');
+        */
 
         $names = [ 'idx', 'post_id', 'password', 'title', 'content',
             'email', 'first_name', 'middle_name', 'last_name', 'gender',
             'birth_year', 'birth_month', 'birth_day', 'country', 'province', 'city',
             'address', 'mobile', 'landline'
         ];
+
+        foreach( $names as $name ) {
+            if ( in($name) ) $data[ $name ] = in($name);
+        }
 
 
         for( $i = 1; $i <= 10; $i++ ) {
