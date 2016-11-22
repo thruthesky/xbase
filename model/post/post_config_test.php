@@ -3,18 +3,17 @@
 class post_config_test {
     public function run() {
 
-        $this->create();
+        $this->test_create();
         $this->update();
-        $this->delete();
+        $this->test_delete();
     }
 
 
 
-    public function create() {
+    public function test_create() {
         $id = "test-forum-2";
 
-        post_config()->delete( $id );
-
+        $this->delete( $id );
 
         // error test without id
         $_REQUEST['mc'] = 'post_config.create';
@@ -34,8 +33,8 @@ class post_config_test {
         $re = http_test( $_REQUEST );
         if ( is_success( $re ) ) test_pass("post_config()->create() success: idx: $re[data]");
         else {
-		test_fail("post_config()->create() failed: $re[message]");
-	}
+		    test_fail("post_config()->create() failed: $re[message]");
+	    }
 
     }
 
@@ -48,8 +47,8 @@ class post_config_test {
         $_REQUEST['name'] = 'test name';
         $_REQUEST['title'] = 'test title';
 
-        // delete previously created one.
-        post_config()->delete( $_REQUEST['id'] );
+
+        $this->delete( $_REQUEST['id'] );
 
 
         // create
@@ -73,17 +72,38 @@ class post_config_test {
 
     }
 
-    private function delete()
+    private function test_delete()
     {
         $id = 'delete-test-3';
-        post_config()->delete( $id );
+        $this->delete($id);
+        $this->create($id);
+        $e = $this->delete($id);
+        if ( $e ) test_fail('test_delete() error: ' . $e);
+    }
+
+
+
+    /**
+     * @param $id
+     * @return bool
+     *  - false on success
+     *  - string on error.
+     */
+    private function create($id) {
         $re = http_test( ['mc'=>'post_config.create', 'id'=>$id, 'name'=>'name'] );
-        if ( is_success($re) ) test_pass("test-delete created");
-        else test_fail("test-delete failed: $re[message]");
+        if ( is_success($re) ) return false;
+        else return $re['message'];
+    }
 
-
+    /**
+     * @param $id
+     * @return bool
+     *  - false on success
+     *  - string on error.
+     */
+    private function delete($id) {
         $re = http_test( [ 'mc' => 'post_config.delete', 'id' => $id ] );
-        if ( is_success($re) ) test_pass("post_config.delete deleted!!");
-        else test_fail("post_config.delete failed: $re[message]");
+        if ( is_success($re) ) return false;
+        else return $re['message'];
     }
 }

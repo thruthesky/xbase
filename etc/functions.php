@@ -190,11 +190,13 @@ function validate_regex( $ex, $str ) {
  * @return bool|string
  *      - false on success
  *      - error message on failure.
+ *
+ * @fix on 2016-11-22, email form does not check since, email can be used in user identification like '1234@twitter.com@philgo.com'
  */
 function validate_id( $id ) {
 
     if ( validate_length( $id, 4, 64) ) return 'id-length-too-short-or-too-long';
-    if ( ! preg_match("/^[a-zA-Z0-9\-_@\.]+$/", $id) ) return 'id-malformed';
+    // if ( ! preg_match("/^[a-zA-Z0-9\-_@\.]+$/", $id) ) return 'id-malformed';
     return false;
 
 }

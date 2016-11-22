@@ -6,7 +6,7 @@ class user_crud_test {
 
 
         $this->validation();
-        $this->register();
+        $this->test_register();
         $this->update();
         $this->changePassword();
 
@@ -27,50 +27,62 @@ class user_crud_test {
     }
 
     /**
+     * @param $data
+     *
+     * @return bool
+     *
+     *      - false on success
+     *      - string of error message on error.
+     *
+     */
+    public function register( $data ) {
+        $data['mc'] = 'user.register';
+        $re = http_test( $data );
+        if ( is_success( $re ) ) return false;
+        else return $re['message'];
+    }
+
+
+
+
+    /**
      *
      * ex) \app\php\php index.php "mc=test.method&method=user.user_crud_test.register&id=myid2&password=12345&email=abc@def.co"
      */
-    public function register() {
-        $user = [];
+    public function test_register() {
+        $user = [ 'mc' => 'user.register' ];
+
+
+
+        /// @attention local test only !!
         $re = user()->create( $user );
         test( ! is_numeric($re), 'register() failed', "user->create() ok? why? it should be failed." );
 
 
-        $user = [ 'id' => 'id' . md5(time()), 'password' => '12345' ];
+        /// @attention local test only !!.
+        /// error because no email.
+        $user = [ 'mc' => 'user.register', 'id' => 'id' . md5(time()), 'password' => '12345' ];
         $re = user()->create( $user );
         test( ! is_numeric($re), "user->create() failed: $re", "user->create() ok? why? it should be failed." );
 
+        //
         $user['email'] = "$user[id]@gmail.com";
-        $re = user()->create( $user );
-        test( is_numeric($re), "user->create() success", "user->create() failed: $re" );
+        $error = $this->register( $user );
+        if ( $error ) test_fail( "user->create() failed: $error " );
+        else test_pass('user created');
+
+        // id exists.
+        $error = $this->register( $user );
+        if ( $error == 'id-exists' ) test_pass('user exists.');
+        else test_fail( "user->create() failed: $error " );
 
 
-        $re = user()->create( $user );
-        test( $re == 'id-exists', "user->create() failed", "user->create() success? why? : $re" );
 
-
+        // email exists.
         $user['id'] = $user['id'] . '2';
-        $re = user()->create( $user );
-        test( $re == 'email-exists', "user->create() failed", "user->create() success? why? : $re" );
-
-
-        $user['email'] = "$user[id]@gmail.com";
-        $re = user()->create( $user );
-        test( is_numeric($re), "user->create() success with change of id and email", "user->create() failed: $re" );
-
-
-        $data = array_merge( $user, ['mc'=>'user.register'] );
-        $res = http_test( $data );
-        if ( is_error( $res ) ) test_pass("register through HTTP failed: $res[message]");
-        else test_fail("restration on HTTP usccess? why?");
-
-
-
-        $user['id'] = $user['id'] . '3';
-        $user['email'] = "$user[id]@gmail.com";
-        $data = array_merge( $user, ['mc'=>'user.register'] );
-        $res = http_post( SERVER_URL, $data, true);
-        test( $res['code'] == 0, "register through HTTP success: session_id: $res[data]", "restration on HTTP failed? why?");
+        $error = $this->register( $user );
+        if ( $error == 'email-exists' ) test_pass('user email exists');
+        else test_fail("user create should be failed because email exists. e: $re");
 
     }
 
@@ -78,16 +90,24 @@ class user_crud_test {
     public function update() {
 
 
-        $id = "id-update-test-2";
+
+        $id = "id-update-test-2" . md5(time());
         $password = '12345a';
         $email = "$id@gmail.com";
 
-        user()->delete( $id );
+
+
+        // @Warning this test only for delete().
+        // user()->delete( $id );
+
 
         // register
         $user = [ 'id' => $id, 'password' => $password, 'email' => $email];
-        $user_idx = user()->create( $user );
-        test( is_numeric($user_idx), 'user()->create() ok for update test', "failed for user()->create() : $user_idx" );
+        // $user_idx = user()->create( $user );
+        $error = $this->register( $user );
+
+        //
+        // test( is_numeric($user_idx), 'user()->create() ok for update test', "failed for user()->create() : $user_idx" );
 
         // login
         $data = array_merge( $user, ['mc'=>'user.login'] );

@@ -37,7 +37,7 @@ class post_config extends Entity {
         $data = $this->getRequestPostConfigData();
         if ( $error = $this->validate_post_config_data( $data, true ) ) json( $error );
         $config = post_config()->get( $data['id'] );
-        if ( ! $config ) json_error( -40324, "wrong-post-id");
+        if ( ! $config ) json_error( -40328, "wrong-post-id");
         $id = db()->escape($data['id']);
         unset( $data['id'] );
         db()->update('post_config', $data, "id='$id'");

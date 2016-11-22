@@ -3,6 +3,9 @@ Center X Base Framework
 
 # TODO
 
+    - [ ] remote server test. it creates error when there is no database file on localhost.
+    -       
+
     TEST on each Model/Controll.
         - This is the easies way to test the code. It does not need to create test view pages nor ajax test.
     USER CRUD with PHOTO
@@ -42,9 +45,9 @@ index.php?mc=user.register
 
 * var/db/xbase.db is the template database. Do not overrwite this file.
     This file is added into git.
-    Copy this file into something like "database.php" and use the copied file as database.
+    Copy this file into something like "database.cgi" and use the copied file as database.
 
-    * @Attention file extension is '.php' for security reason.
+    * @Attention file extension is '.cgi' for security reason.
     
 
 When there is error, SQL error message will be return in JSON
