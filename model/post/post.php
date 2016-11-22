@@ -7,7 +7,7 @@ class post extends Entity {
     {
         parent::__construct();
         $this->setTable( 'post_data' );
-        $this->setSearchableFields('idx,post_id,user_id,title,content,created,updated');
+        $this->setSearchableFields('*');
     }
 
     /**
