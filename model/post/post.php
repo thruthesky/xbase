@@ -75,7 +75,7 @@ class post extends Entity {
     /**
      * Checks permission on the $post with $password or logged in user's account.
      * @param $post
-     * @param $password
+     * @param $password - plain text password! The password must plain text. not encrypted.
      * @return array|bool
      *      - false on success.
      *      - error array on failure.
@@ -85,12 +85,14 @@ class post extends Entity {
      * 2. login user id match.
      */
     private function checkPermission( $post, $password ) {
+	if ( empty($post) ) return error( -40568, 'post-not-exist' );
+	$password = encrypt_password( $password );
         if ( isset( $password ) && $password ) {
             if ( $password == $post['password'] ) return false; // success. permission granted.
             else return error( -40564, 'wrong-password' );
         }
         else if ( $post['user_id'] == 'anonymous' ) return error( -40565, 'login-or-input-password' );
-        else if ( $post['user_id'] != my('id') ) return error( -40565, 'not-your-post' );
+        else if ( $post['user_id'] != my('id') ) return error( -40567, 'not-your-post' );
         return false; // success. this is your post. permission granted.
     }
 
