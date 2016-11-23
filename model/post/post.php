@@ -7,7 +7,9 @@ class post extends Entity {
     {
         parent::__construct();
         $this->setTable( 'post_data' );
-        $this->setSearchableFields('*');
+        $this->setSearchableFields('idx,post_id,title,content,email,first_name,middle_name,last_name,gender,birth_year,birth_month,birth_day,country,province,city,address,mobile,landline,category_1,category_2,category_3,category_4,category_5,category_6,category_7,category_8,category_9,category_10,extra_1,extra_2,extra_3,extra_4,extra_5,extra_6,extra_7,extra_8,extra_9,extra_10,attachment_1,attachment_2,attachment_3,attachment_4,attachment_5');
+
+
     }
 
     /**
@@ -25,6 +27,12 @@ class post extends Entity {
         json( $this->update() );
     }
 
+    /**
+     * Checks if the user has permission on the post.
+     *
+     * @example request - http://w8.philgo.com/etc/xbase/index.php?idx=1099&password=123456&mc=post.permission
+     *
+     */
     public function permission() {
         $post = $this->get( in('idx') );
         json( $this->checkPermission( $post, in('password')) );

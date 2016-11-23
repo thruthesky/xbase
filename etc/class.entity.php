@@ -139,9 +139,9 @@ class Entity {
         else $page = 1;
 
 
-	// order by.
-	if ( isset($options['orderby']) ) $orderby = "ORDER BY $options[orderby]";
-	else $orderby = '';
+        // order by.
+        if ( isset($options['orderby']) ) $orderby = "ORDER BY $options[orderby]";
+        else $orderby = '';
 
 
         // get limit to.
@@ -153,7 +153,6 @@ class Entity {
 
         $q = "SELECT $fields FROM $table $where $orderby LIMIT $from, $to" ;
         $rows = db()->get_results( $q );
-
 
 
         $data = [];
