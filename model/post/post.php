@@ -66,21 +66,32 @@ class post extends Entity {
         if ( ! isset($data['idx']) ) return error( -40564, 'input-idx');
         $post = $this->get( $data['idx'] );
 
-	// check permission
-	// permission ok on:
-	// 1. password match
-	// 2. login user id match.
-	if ( isset($data['password']) && $data['password'] ) {
-		if ( $data['password'] == $post['password'] ) $permission = true;
-		else return error( -40564, 'wrong-password' );
-	}
-	else if ( $post['user_id'] == 'anonymous' ) return error( -40565, 'login-or-input-password' );
-        else if ( $post['user_id'] != my('id') ) return error( -40565, 'not-your-post' );
-
-
+        if ( $error = $this->checkPermission( $post, $data['password'] ) ) return $error;
         db()->update( $this->getTable(), $data, "idx=$data[idx]");
 
         return false;
+    }
+
+    /**
+     * Checks permission on the $post with $password or logged in user's account.
+     * @param $post
+     * @param $password
+     * @return array|bool
+     *      - false on success.
+     *      - error array on failure.
+     *
+     * @code-flow
+     * 1. password match
+     * 2. login user id match.
+     */
+    private function checkPermission( $post, $password ) {
+        if ( isset( $password ) && $password ) {
+            if ( $password == $post['password'] ) return false; // success. permission granted.
+            else return error( -40564, 'wrong-password' );
+        }
+        else if ( $post['user_id'] == 'anonymous' ) return error( -40565, 'login-or-input-password' );
+        else if ( $post['user_id'] != my('id') ) return error( -40565, 'not-your-post' );
+        return false; // success. this is your post. permission granted.
     }
 
     public function validate_post_data( $data, $edit = false ) {
@@ -146,23 +157,24 @@ class post extends Entity {
     }
 
     /**
+     *
+     *
+     * @note This can be used as HTTP interface.
+     *
      * @param null $idx
      * @return void
+     *
+     * @todo test.
      */
     public function delete( $idx = null ) {
         if ( in('mc') ) {
             $idx = in('idx');
             if ( empty($idx) ) json_error(-40222, "input-idx");
         }
-        // if you are admin, pass
-        $post = $this->get( $idx );
-        if ( $post['user_id'] == my('id') ) { // yes it is yours.
 
-        }
-        else {
-            // @todo check if admin
-            json_error( -40224, 'not-your-post');
-        }
+        $post = $this->get( $idx );
+        if ( $error = $this->checkPermission( $post, in('password') ) ) json_error($error);
+
         $re = parent::delete( $idx );
         if ( $re === false ) json_success();
         else json_error( -40223, "post-delete-failed");
