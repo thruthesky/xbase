@@ -124,6 +124,8 @@ class post extends Entity {
             if ( in($name) ) $data[ $name ] = in($name);
         }
 
+	if ( isset( $data['password'] ) && $data['password'] ) $data['password'] = md5( $data['password'] ); // @todo need to improve security by putting secret pass-phrase.
+
 
         for( $i = 1; $i <= 10; $i++ ) {
             $v = "category_$i";
