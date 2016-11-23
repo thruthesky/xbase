@@ -25,6 +25,11 @@ class post extends Entity {
         json( $this->update() );
     }
 
+    public function permission() {
+        $post = $this->get( in('idx') );
+        json( $this->checkPermission( $post, in('password')) );
+    }
+
     /**
      * @return array|int
      *      - post.idx on success
@@ -71,6 +76,8 @@ class post extends Entity {
 
         return false;
     }
+
+
 
     /**
      * Checks permission on the $post with $password or logged in user's account.
@@ -135,7 +142,7 @@ class post extends Entity {
             if ( in($name) ) $data[ $name ] = in($name);
         }
 
-	if ( isset( $data['password'] ) && $data['password'] ) $data['password'] = md5( $data['password'] ); // @todo need to improve security by putting secret pass-phrase.
+	if ( isset( $data['password'] ) && $data['password'] ) $data['password'] = encrypt_password( $data['password'] ); // @todo need to improve security by putting secret pass-phrase.
 
 
         for( $i = 1; $i <= 10; $i++ ) {
@@ -165,6 +172,7 @@ class post extends Entity {
      * @return void
      *
      * @todo test.
+     * @example call - http://w8.philgo.com/etc/xbase/index.php?idx=1098&password=abc123&mc=post.delete
      */
     public function delete( $idx = null ) {
         if ( in('mc') ) {
