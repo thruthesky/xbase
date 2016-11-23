@@ -140,7 +140,7 @@ class Entity {
 
 
 	// order by.
-	if ( isset($options['orderby']) ) $orderby = "ORDER BY $orderby";
+	if ( isset($options['orderby']) ) $orderby = "ORDER BY $options[orderby]";
 	else $orderby = '';
 
 
