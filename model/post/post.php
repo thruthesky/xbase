@@ -65,7 +65,18 @@ class post extends Entity {
         $data['updated'] = time();
         if ( ! isset($data['idx']) ) return error( -40564, 'input-idx');
         $post = $this->get( $data['idx'] );
-        if ( $post['user_id'] != my('id') ) return error(-40560, 'not-your-post');
+
+	// check permission
+	// permission ok on:
+	// 1. password match
+	// 2. login user id match.
+	if ( isset($data['password']) && $data['password'] ) {
+		if ( $data['password'] == $post['password'] ) $permission = true;
+		else return error( -40564, 'wrong-password' );
+	}
+	else if ( $post['user_id'] == 'anonymous' ) return error( -40565, 'login-or-input-password' );
+        else if ( $post['user_id'] != my('id') ) return error( -40565, 'not-your-post' );
+
 
         db()->update( $this->getTable(), $data, "idx=$data[idx]");
 

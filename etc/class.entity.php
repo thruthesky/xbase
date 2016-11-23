@@ -115,6 +115,7 @@ class Entity {
      * @return array
      * @see user_entity_test::run()
      * @see post_test::search()
+     * @update 2016-11-23 order by clause added.
      *
      */
     public function search( $options = false ) {
@@ -137,6 +138,12 @@ class Entity {
         if ( isset($options['page'] ) ) $page = get_page_no( $options['page'] );
         else $page = 1;
 
+
+	// order by.
+	if ( isset($options['orderby']) ) $orderby = "ORDER BY $orderby";
+	else $orderby = '';
+
+
         // get limit to.
         if ( isset($options['limit'] ) ) $to = $options['limit'];
         else $to = 10;
@@ -144,7 +151,7 @@ class Entity {
         // get limit from
         $from = get_page_from( $page, $to );
 
-        $q = "SELECT $fields FROM $table $where LIMIT $from, $to" ;
+        $q = "SELECT $fields FROM $table $where $orderby LIMIT $from, $to" ;
         $rows = db()->get_results( $q );
 
 
